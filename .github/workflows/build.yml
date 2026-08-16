@@ -11,13 +11,13 @@ jobs:
 
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Setup NuGet
         uses: NuGet/setup-nuget@v2
 
       - name: Restore NuGet packages
-        run: nuget restore EmulatedGamesNotInstalled.csproj
+        run: nuget restore EmulatedGamesNotInstalled.csproj -PackagesDirectory packages
 
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
@@ -25,7 +25,7 @@ jobs:
       - name: Build
         run: msbuild EmulatedGamesNotInstalled.csproj /p:Configuration=Release /p:Platform=AnyCPU
 
-      - name: Create .pext
+      - name: Create Playnite package
         shell: pwsh
         run: |
           New-Item -ItemType Directory -Force -Path package | Out-Null
@@ -34,7 +34,7 @@ jobs:
           Compress-Archive -Path package/* -DestinationPath EmulatedGamesNotInstalled.zip -Force
           Rename-Item EmulatedGamesNotInstalled.zip EmulatedGamesNotInstalled.pext
 
-      - name: Upload .pext
+      - name: Upload plugin
         uses: actions/upload-artifact@v4
         with:
           name: Playnite-plugin
